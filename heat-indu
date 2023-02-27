@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+import pprint
+import openstack 
+
+cloud=openstack.connect(cloud='jonathan')
+
+pp=pprint.PrettyPrinter(indent=4)
+
+
+def create_webserver(cloud):
+
+        stack_name='webserver'
+        template='./60-heat-indu.yml'
+        cloud.create_stack(name=stack_name, template_file=template)
+
+create_webserver(cloud)

@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import openstack 
+
+client=openstack.connect(cloud='jonathan')
+
+def create_vm_volume(client):
+
+        stack_name='vm_volume'
+        template='./50-heat-vol.yml'
+        client.create_stack(name=stack_name, template_file=template)
+
+create_vm_volume(client)
+[prc13w@poste08-01-04 ~(cx 

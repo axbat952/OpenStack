@@ -1,0 +1,60 @@
+#!/usr/bin/env python3
+import openstack
+
+# Connexion à OpenStack
+cloud = openstack.connect(cloud='jonathan')
+
+# Création du réseau externe
+external_network_name = 'ext-axel'
+external_subnet_name = 'ext-subnet'
+external_subnet_cidr = '10.23.0.0/16'
+gateway_ext='10.23.255.252'
+
+network = cloud.network.find_network(external_network_name)
+if network:
+    print(f"Le réseau {external_network_name} existe déjà.")
+else:
+    external_network = cloud.network.create_network(name=external_network_name)
+    external_subnet = cloud.network.create_subnet(
+      name=external_subnet_name,
+      network_id=external_network.id,
+      cidr=external_subnet_cidr,
+      gateway_ip=gateway_ext,
+      ip_version='4'
+)
+print(network)
+
+# récupérer le réseau que vous souhaitez marquer comme réseau externe
+network = cloud.network.find_network(external_network_name)
+
+# Création du réseau d'intégration
+internal_network_name = 'int-axel'
+internal_subnet_name = 'int-subnet'
+internal_subnet_cidr = '10.101.2.0/24'
+gateway='10.101.2.1'
+
+internal_network = cloud.network.create_network(name=internal_network_name)
+internal_subnet = cloud.network.create_subnet(
+    name=internal_subnet_name,
+    network_id=internal_network.id,
+    cidr=internal_subnet_cidr,
+    gateway_ip=gateway,
+    ip_version='4'
+)
+
+# Création du routeur virtuel
+router_name = 'router-axel'
+
+router = cloud.network.create_router(name=router_name)
+cloud.network.add_interface_to_router(
+    router,
+    subnet_id=internal_subnet.id
+)
+#cloud.network.update_router(
+  #  router,
+ #   external_gateway_info={
+ #       'network_id': external_network.id
+#    }
+#)
+
+print('Réseau externe, réseau dintégration et routeur virtuel créés avec succès !')

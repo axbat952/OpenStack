@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import pprint
+import openstack 
+
+def print_instances(client):
+    instances = client.compute.servers()
+    pprint.pprint("Liste des instances: ")
+    for instance in instances:
+        pprint.pprint(f"Nom: {instance.name}   id: {instance.id}")
+
+def print_volumes(client):
+    volumes = client.block_storage.volumes()
+    pprint.pprint("Liste des volumes: ")
+    for volume in volumes:
+        pprint.pprint(f"Nom: {volume.name}   Taille: {volume.size}")
+
+def attach_volume(client):
+    print_instances(client)
+    instance_id = input("Copier/coller l'id de l'instance voulue: ")
+    instance = client.compute.find_server(instance_id)
+    print_volumes(client)
+    volume_name = input("Veuillez entrer le nom du volume créé: ")
+    volume = client.block_storage.find_volume(volume_name)
+    client.compute.create_volume_attachment(instance, volumeId=volume.id)
+    print(f"Le volume {volume_name} a été attaché à l'instance {instance.name}.")
+
+def detach_volume(client):
+    print_instances(client)
+    instance_id = input("Copier/coller l'id de l'instance voulue: ")
+    instance = client.compute.find_server(instance_id)
+    volumes = client.compute.volume_attachments(instance)
+    pprint.pprint("Liste des volumes attachés à l'instance : ")
+    for volume in volumes:
+        volume = client.block_storage.get_volume(volume.id)
+        pprint.pprint(f"Nom: {volume.name}   Taille: {volume.size}")
+    volume_name = input("Veuillez entrer le nom du volume à détacher: ")
+    volume = client.block_storage.find_volume(volume_name)
+    client.compute.delete_volume_attachment(instance, volume)
+    print(f"Le volume {volume_name} a été détaché de l'instance {instance.name}.")
+
+def main():
+    client = openstack.connect(cloud='jonathan')
+    while True:
+        action = input("Veuillez entrer l'action que vous souhaitez effectuer (attach/detach) ou 'q' pour quitter: ")
+        if action == "attach":
+            attach_volume(client)
+        elif action == "detach":
+            detach_volume(client)
+        elif action == "q":
+            print("Bye bye!")
+            break
+        else:
+            print("Action invalide. Veuillez entrer 'attach', 'detach' ou 'q' pour quitter.")
+
+if __name__ == "__main__":
+    main()

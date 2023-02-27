@@ -1,0 +1,41 @@
+heat_template_version: 2016-10-14
+
+description: HEAT - create vm and attach Volume
+
+resources:
+  VMCENTOS:
+    type: OS::Nova::Server
+    properties:
+      # Nom de la clé privée pour accéder à la VM
+      key_name: axel-key
+      # Image utilisée pour la VM
+      image: ct8.4
+      # Taille utilisé pour la VM
+      flavor: m1.medium
+      networks:
+        # Réseau auquel la VM est connectée
+        - network: int_net
+      security_groups:
+        # Groupe de sécurité utilisé par la VM
+        - ssh_ping
+      # Nom de la VM
+      name: centos-axel-heat
+
+  VOLUME10GB:
+    type: OS::Cinder::Volume
+    properties:
+      # Nom du volume
+      name: axel-disk-heat
+      # Taille en GB du volume
+      size: 10
+
+  volume_attachment:
+    depends_on: [VMCENTOS, VOLUME10GB]
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      # ID du volume à attacher
+      volume_id: { get_resource: VOLUME10GB }
+      # ID de la VM à laquelle attacher le volume
+      instance_uuid: { get_resource: VMCENTOS }
+      # Point de montage du volume sur la VM
+      mountpoint: /dev/vdb

@@ -1,0 +1,30 @@
+heat_template_version: 2016-10-14
+
+description: HEAT - create webserver 
+
+resources:
+  WEBSERVER:
+    type: OS::Nova::Server
+    properties:
+      key_name: axel-key
+      image: ct8.4
+      flavor: m1.medium
+      networks:
+        - network: int_net
+      security_groups:
+        - ssh_ping
+      name: webserver
+      user_data: |
+        #!/bin/bash
+        yum install httpd
+        systemctl enable httpd
+        systemctl start httpd
+
+        # Partitionnement et formatage du disque dur
+        echo -e "o\nn\np\n1\n\n\nw" | fdisk /dev/vdb
+        mkfs.ext4 /dev/vdb1
+        echo '/dev/vdb1 /var/www/html ext4 defaults 0 0' >> /etc/fstab
+        mount /var/www/html
+
+        # Remplacement de l'index.html par un index personnalisé
+        curl http://10.23.108.44/index.html -o /var/www/html/index.html

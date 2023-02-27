@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+
+import openstack
+
+# Créer une connexion OpenStack
+cloud = openstack.connect(cloud='jonathan')
+
+# Créer un volume de 10 Go
+volume = cloud.create_volume(
+    name='axel-disk',
+    size=10,
+    volume_type='nfs'
+)
+# Récupérer l'ID de l'instance à laquelle on veut attacher le volume
+instance_id = '7d4daa2e-bec7-4420-b496-e2762e9b8faa'
+print(instance_id)
+# Attacher le volume à l'instance
+cloud.attach_volume(volume=volume, server=instance_id)
+
+print('Volume créé et attaché à la VM avec succès !')

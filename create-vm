@@ -1,0 +1,28 @@
+import openstack
+
+# connexion
+cloud = openstack.connect(cloud='jonathan')
+
+# config for new vm
+vm_name = 'centos-axel02'
+flavor_name = 'm1.medium'
+image_name = 'ct8.4'
+
+# get infos for create vm
+image = cloud.compute.find_image(image_name)
+flavor = cloud.compute.find_flavor(flavor_name)
+network = cloud.network.find_network('int_net')
+print(network.id)
+keypair = cloud.compute.find_keypair('axel-key')
+
+# create vm
+server = cloud.compute.create_server(
+    name=vm_name,
+    image_id=image.id,
+    flavor_id=flavor.id,
+    key_name=keypair.name,
+    networks=[{"uuid": network.id}]
+)
+server = cloud.compute.wait_for_server(server)
+
+print(f"VM {server.name} créée avec succès !")
