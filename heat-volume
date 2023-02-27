@@ -11,4 +11,3 @@ def create_vm_volume(client):
         client.create_stack(name=stack_name, template_file=template)
 
 create_vm_volume(client)
-[prc13w@poste08-01-04 ~(cx 
