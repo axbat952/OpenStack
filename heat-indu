@@ -10,7 +10,7 @@ pp=pprint.PrettyPrinter(indent=4)
 
 def create_webserver(cloud):
 
-        stack_name='webserver'
+        stack_name='webserver-axel'
         template='./60-heat-indu.yml'
         cloud.create_stack(name=stack_name, template_file=template)
 
