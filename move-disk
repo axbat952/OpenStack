@@ -3,18 +3,21 @@
 import pprint
 import openstack 
 
+# On imprime les instances sur le prompt afin de pouvoir choisir
 def print_instances(client):
     instances = client.compute.servers()
     pprint.pprint("Liste des instances: ")
     for instance in instances:
         pprint.pprint(f"Nom: {instance.name}   id: {instance.id}")
 
+# On imprime les volume sur le prompt afin de pouvoir choisir
 def print_volumes(client):
     volumes = client.block_storage.volumes()
     pprint.pprint("Liste des volumes: ")
     for volume in volumes:
         pprint.pprint(f"Nom: {volume.name}   Taille: {volume.size}")
 
+# Fonction pour attacher le volume sur une instance
 def attach_volume(client):
     print_instances(client)
     instance_id = input("Copier/coller l'id de l'instance voulue: ")
@@ -24,7 +27,8 @@ def attach_volume(client):
     volume = client.block_storage.find_volume(volume_name)
     client.compute.create_volume_attachment(instance, volumeId=volume.id)
     print(f"Le volume {volume_name} a été attaché à l'instance {instance.name}.")
-
+    
+# Fonction pour detacher le volume sur une instance
 def detach_volume(client):
     print_instances(client)
     instance_id = input("Copier/coller l'id de l'instance voulue: ")
