@@ -50,11 +50,5 @@ cloud.network.add_interface_to_router(
     router,
     subnet_id=internal_subnet.id
 )
-#cloud.network.update_router(
-  #  router,
- #   external_gateway_info={
- #       'network_id': external_network.id
-#    }
-#)
 
 print('Réseau externe, réseau dintégration et routeur virtuel créés avec succès !')
