@@ -6,14 +6,19 @@ resources:
   WEBSERVER:
     type: OS::Nova::Server
     properties:
+      # Paires de clés
       key_name: axel-key
+      # Nom de l'image dans openstack
       image: ct8.4
+      # Taille de la VM définit dans openstack
       flavor: m1.medium
+      # Choix du réseau
       networks:
         - network: int_net
+      # Choix du groupe de sécurité (ici on a allow 22 et 80)
       security_groups:
         - ssh_ping
-      name: webserver
+      name: webserver-axel
       user_data: |
         #!/bin/bash
         yum install httpd
@@ -28,3 +33,5 @@ resources:
 
         # Remplacement de l'index.html par un index personnalisé
         curl http://10.23.108.44/index.html -o /var/www/html/index.html
+
+
